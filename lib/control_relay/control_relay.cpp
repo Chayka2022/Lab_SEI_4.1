@@ -7,8 +7,6 @@ void relayInit( Relay_t *relay,
                 void(*relaySetup)(Relay_t*,uint8_t pin),  
                 void(*setState)(Relay_t*, RelayState_t value))
 {
-    printf("!!Init relay init\n\r");
-
     if (relay == NULL || relaySetup == NULL || setState == NULL)
     {
         return;
@@ -31,6 +29,16 @@ void relaySetup(Relay_t* relay, uint8_t pin)
     relay->pin = pin;
     pinMode(relay->pin, OUTPUT);
     digitalWrite(relay->pin, relay->currentState);
+}
+
+void relayCycleCall(Relay_t* relay)
+{
+    if (relay->wasModified)
+    {
+        printf("Relay state changed to %d\n\r", relay->currentState);
+        relaySetState(relay, relay->currentState);
+        relay->wasModified = false;
+    }
 }
 
 void relaySetState(Relay_t* relay, RelayState_t value)

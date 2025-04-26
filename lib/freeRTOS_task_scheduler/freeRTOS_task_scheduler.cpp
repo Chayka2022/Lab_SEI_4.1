@@ -29,6 +29,7 @@ void controlRelayTaskInit(void)
         relaySetup,
         relaySetState
     );
+    printf("Relay initialized");
 }
 
 void controlRelayTask(void *pvParameters)
@@ -42,12 +43,7 @@ void controlRelayTask(void *pvParameters)
 
     for(;;)
     {
-        if(relay1->wasModified)
-        {
-            printf("Relay state changed to %d\n\r", relay1->currentState);
-            relaySetState(relay1, relay1->currentState);
-            relay1->wasModified = false;
-        }
+        relayCycleCall(relay1); // Call the relay cycle function
         vTaskDelay(1000 / portTICK_PERIOD_MS); // Delay for 1 second
     }
 

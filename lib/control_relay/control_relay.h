@@ -26,7 +26,7 @@ void relayInit( Relay_t *relay,
                 RelayState_t value, 
                 void(*relaySetup)(Relay_t *self, uint8_t pin), 
                 void(*setState)(Relay_t *self, RelayState_t value));
-
+void relayCycleCall(Relay_t* relay);
 void relaySetup(Relay_t* relay, uint8_t pin);
 void relaySetState(Relay_t* relay, RelayState_t value);
 
