@@ -11,8 +11,6 @@
 
 void controlInit(void);
 void controlGetCommand(void);
-void controlExecute(Relay_t *relay);
-void relaySetStateOnWrapper(Relay_t *relay);
-void relaySetStateOffWrapper(Relay_t *relay);
+void controlExecute(void);
 
 #endif // !CONTROL_INTERFACE_H

@@ -1,60 +1,66 @@
 #include "control_relay.h"
 
 void relayInit( Relay_t *relay,
-                uint8_t wasModified,
-                uint8_t pin, 
-                RelayState_t value, 
-                void(*relaySetup)(Relay_t*,uint8_t pin),  
-                void(*setState)(Relay_t*, RelayState_t value))
+    uint8_t wasModified,
+    uint8_t pin, 
+    RelayState_t value, 
+    void(*pinInit)(uint8_t pin), 
+    void(*setState)(uint8_t pin, RelayState_t value)
+)
 {
-    if (relay == NULL || relaySetup == NULL || setState == NULL)
+    if (relay == NULL || pinInit == NULL || setState == NULL)
     {
         return;
     }
     relay->wasModified = false;
     relay->pin = pin;
     relay->currentState = value;
-    relay->relaySetup = relaySetup;
-    relay->setState = setState;
+    relay->pinInit = pinInit;
+    relay->pinSetState = setState;
 
-    relay->relaySetup(relay, pin);
-}
-
-void relaySetup(Relay_t* relay, uint8_t pin)
-{
-    if (pin == 0 || relay == NULL)
-    {
-        return;
-    }
-    relay->pin = pin;
-    pinMode(relay->pin, OUTPUT);
-    digitalWrite(relay->pin, relay->currentState);
+    relay->pinInit(pin);
+    relay->pinSetState(pin, value); // Set the initial state of the relay
 }
 
 void relayCycleCall(Relay_t* relay)
 {
     if (relay->wasModified)
     {
+#ifdef DEBUG
         printf("Relay state changed to %d\n\r", relay->currentState);
-        relaySetState(relay, relay->currentState);
+#endif
+        relay->pinSetState(relay->pin, relay->currentState); // Set the new state of the relay
         relay->wasModified = false;
     }
 }
 
-void relaySetState(Relay_t* relay, RelayState_t value)
+inline void relaySetState(Relay_t* relay, RelayState_t value)
 {
-    if (relay == NULL)
+    relay -> currentState = value;
+    relay -> wasModified = true;
+}
+
+void relayToggle(Relay_t* relay)
+{
+#ifdef DEBUG
+    printf("Relay state toggled\n\r");
+#endif
+    if (relay->currentState == RELAY_ON)
     {
-        printf("Relay is not initialized or value is invalid\n\r");
-        return;
+        relaySetState(relay, RELAY_OFF);
     }
-    if (value == RELAY_ON)
+    else
     {
-        digitalWrite(relay->pin, HIGH); // Turn the relay ON
+        relaySetState(relay, RELAY_ON);
     }
-    else if (value == RELAY_OFF)
-    {
-        digitalWrite(relay->pin, LOW); // Turn the relay OFF
-    }
-    relay->wasModified = true; // Set the wasModified flag to true
+}
+
+void relaySet(Relay_t* relay)
+{
+    relaySetState(relay, RELAY_ON);
+}
+
+void relayReset(Relay_t* relay)
+{
+    relaySetState(relay, RELAY_OFF);
 }

@@ -5,23 +5,37 @@ static char commandBuffer[COMMAND_BUFFER_SIZE] = {0};
 static const char *controlCommands[NUMBER_OF_COMMANDS] = 
 {
     "Relay ON",
-    "Relay OFF"
+    "Relay OFF",
+    "Relay TOGGLE",
 };
 
 static const char *controlDescriptions[NUMBER_OF_COMMANDS] = 
 {
     "Turn the relay ON",
-    "Turn the relay OFF"
+    "Turn the relay OFF",
+    "Toggle the relay state"
 };
 
 static void (*controlCommandHandler[NUMBER_OF_COMMANDS])(Relay_t *relay) = 
 {
-    relaySetStateOnWrapper, // Turn the relay ON
-    relaySetStateOffWrapper  // Turn the relay OFF
+    relaySet, // Turn the relay ON
+    relayReset,  // Turn the relay OFF
+    relayToggle // Toggle the relay state
 };
+
+Relay_t theRelay;
 
 void controlInit(void)
 {
+    relayInit(
+        &theRelay,
+        false,  
+        CONTROL_PIN,
+        RELAY_OFF,
+        relaySetupPinAsOut,
+        relayWrite
+    );
+
     printf("Control interface initialized!\n\r");
     printf("Available commands:\n\r");
     for (uint8_t i = 0; i < NUMBER_OF_COMMANDS; i++)
@@ -49,16 +63,12 @@ void controlGetCommand(void)
         // In case of error or EOF, make it an empty string
         commandBuffer[0] = '\0';
     }
+
+    controlExecute(); // Execute the command immediately after getting it
 }
 
-void controlExecute(Relay_t *relay)
+void controlExecute(void)
 {
-    if (relay == NULL)
-    {
-        printf("Relay is not initialized.\n\r");
-        return;
-    }
-
     bool matched = false;
 
     for (uint8_t i = 0; i < NUMBER_OF_COMMANDS; i++)
@@ -69,7 +79,7 @@ void controlExecute(Relay_t *relay)
             matched = true;
             //printf executing coomand name
             printf("Executing command: %s\n\r", controlCommands[i]);
-            controlCommandHandler[i](relay);
+            controlCommandHandler[i](&theRelay); // Call the command handler
             break;
         }
     }
@@ -88,17 +98,4 @@ void controlExecute(Relay_t *relay)
 
     // prompt for the next command
     printf("Enter command:\n\r");
-}
-
-
-void relaySetStateOnWrapper(Relay_t *relay)
-{
-    relay->currentState = RELAY_ON;
-    relay->wasModified = true;
-}
-
-void relaySetStateOffWrapper(Relay_t *relay)
-{
-    relay->currentState = RELAY_OFF;
-    relay->wasModified = true;
 }
