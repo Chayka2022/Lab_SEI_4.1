@@ -47,24 +47,21 @@ void controlInit(void)
 
 void controlGetCommand(void)
 {
-    // Read a line (up to COMMAND_BUFFER_SIZE-1 chars) from stdin
-    // Note: fgets will include the '\n' if there's room.
-    if (fgets(commandBuffer, COMMAND_BUFFER_SIZE, stdin) != NULL)
+    // Читаем строку целиком до '\n'
+    if (scanf(" %" "255[^\n]", commandBuffer) == 1)  // 255 = COMMAND_BUFFER_SIZE - 1
     {
-        // strip trailing newline, if present
-        size_t len = strlen(commandBuffer);
-        if (len > 0 && commandBuffer[len - 1] == '\n')
-        {
-            commandBuffer[len - 1] = '\0';
-        }
+        // Строка уже не содержит '\n'
     }
     else
     {
-        // In case of error or EOF, make it an empty string
         commandBuffer[0] = '\0';
     }
 
-    controlExecute(); // Execute the command immediately after getting it
+    // Считываем оставшийся символ новой строки, чтобы не остался в буфере
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+
+    controlExecute();
 }
 
 void controlExecute(void)
