@@ -36,9 +36,4 @@ void relayToggle(Relay_t* relay);
 void relaySet(Relay_t* relay);
 void relayReset(Relay_t* relay);
 
-// Wrapper functions for the relay control
-void relaySetupPinAsOut(uint8_t pin);
-void relayWrite(uint8_t pin, RelayState_t value);
-
-
 #endif // !CONTROL_RELAY_H

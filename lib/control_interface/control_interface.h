@@ -4,7 +4,7 @@
 #include "config.h"
 #include "own_stdio.h"
 
-#include "control_relay.h"
+#include "control_relay_wrapper.h"
 
 #include <string.h>   // for strlen(), fgets()
 #include <stdlib.h>  // for atoi()

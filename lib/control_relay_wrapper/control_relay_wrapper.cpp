@@ -1,6 +1,4 @@
-#include "Arduino.h"
-#include "control_relay.h"
-#include "config.h"
+#include "control_relay_wrapper.h"
 
 void relaySetupPinAsOut(uint8_t pin)
 {
