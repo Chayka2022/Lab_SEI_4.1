@@ -27,15 +27,6 @@ Relay_t theRelay;
 
 void controlInit(void)
 {
-    relayInit(
-        &theRelay,
-        false,  
-        CONTROL_PIN,
-        RELAY_OFF,
-        relaySetupPinAsOut,
-        relayWrite
-    );
-
     printf("Control interface initialized!\n\r");
     printf("Available commands:\n\r");
     for (uint8_t i = 0; i < NUMBER_OF_COMMANDS; i++)

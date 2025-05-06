@@ -15,11 +15,24 @@ void tasksSetup()
     vTaskStartScheduler();
 }
 
+void initialize(){
+    relayInit(
+        &theRelay,
+        false,  
+        CONTROL_PIN,
+        RELAY_OFF,
+        relaySetupPinAsOut,
+        relayWrite
+    );
+}
+
+
 void controlRelayTask(void *pvParameters)
 {
 	static uint8_t needInit = true;
 	if (needInit)
 	{
+        initialize();
 		needInit = false;
 	}
 
